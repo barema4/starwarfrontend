@@ -2,6 +2,7 @@ import React,{useState, useContext, useEffect} from 'react';
 import { useQuery, gql } from '@apollo/client';
 import { Link} from 'react-router-dom';
 import { UserContext } from '../utils/UserContext';
+import styled from 'styled-components';
 
 const ALL_USERS_QUERY = gql`
   query AllUsers($page: Int!) {
@@ -10,6 +11,8 @@ const ALL_USERS_QUERY = gql`
         name
         height
         mass
+        gender
+        homeworld
       }
       count
     }
@@ -17,11 +20,9 @@ const ALL_USERS_QUERY = gql`
 `;
 
 const Home: React.FC = () => {
-
-  const { users, setUsers } = useContext(UserContext);
-  const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
-
+  const { setUsers, currentPage, setCurrentPage } = useContext(UserContext);
+ 
   const { loading, error, data } = useQuery(ALL_USERS_QUERY, {
     variables: { page: currentPage },
     onCompleted: (data) => {
@@ -31,6 +32,7 @@ const Home: React.FC = () => {
       }
     },
   });
+  
 
   const handlePrevPage = () => {
     if (currentPage > 1) {
@@ -52,29 +54,86 @@ const Home: React.FC = () => {
 
   useEffect(() => {
     handleSetUsers()
-  }, [data]);
+  }, []);
 
   if (loading) return <p>Loading...</p>;
   if (error) return <p>Error: {error.message}</p>;
 
+const Title = styled.h1`
+    font-size: 4.5em;
+    text-align: center;
+    color: white;
+    @media screen and (max-width: 380px) {
+        font-size: 2.5em;
+    }
+`;
+
+const Button = styled.button`
+  background: "palevioletred";
+  color: "palevioletred";
+  font-size: 1em;
+  margin: 1em;
+  padding: 0.25em 1em;
+  border: 2px solid cornflowerblue;
+  background: cornflowerblue;
+  color: white;
+  border-radius: 5px;
+`;
+
+const Container = styled.div`
+    display: flex;
+    justify-content: space-between;
+`
+
+const Data = styled.div`
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    grid-gap: 30px;
+    margin: 20px;
+
+    @media screen and (max-width: 380px) {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 8px;
+        margin: 7px;
+      }
+
+`
+
+const DataWrapper = styled.div`
+    border: 1px solid cadetblue;
+    padding: 20px;
+    border-radius: 5px;
+    text-align: center;
+    background: darkblue;
+    color: white;
+`
+
+
+
+
   return (
-    <div>
-      <h1>Star Wars Characters</h1>
+    <div className="flex flex-col h-screen justify-center items-center bg-blue-400">
+      <Title>List of People</Title>
+      <Data>
       {data.allUsers.results.map((user: any) => (
        <Link to={`${user.name}`}>
-        <div key={user.name}>
-          <h3>{user.name}</h3>
-        </div>
+        <DataWrapper key={user.name}>
+          <div className='www'>{user.name}</div>
+        </DataWrapper>
        </Link> 
       ))}
-      <div>
-        <button onClick={handlePrevPage} disabled={currentPage === 1}>
+
+      </Data>
+      
+      <Container>
+        <Button onClick={handlePrevPage} disabled={currentPage === 1}>
           Previous
-        </button>
-        <button onClick={handleNextPage} disabled={currentPage === totalPages}>
+        </Button>
+        <Button onClick={handleNextPage} disabled={currentPage === totalPages}>
           Next
-        </button>
-      </div>
+        </Button>
+      </Container>
     </div>
   );
 };
