@@ -36,10 +36,6 @@ const Home: React.FC = () => {
   const [totalPages, setTotalPages] = useState<number>(0);
   const { setUsers, currentPage, setCurrentPage } = useContext(UserContext);
 
-  useEffect(() => {
-    handleSetUsers()
-  }, [])
- 
   const { loading, error, data } = useQuery(ALL_USERS_QUERY, {
     variables: { page: currentPage },
     onCompleted: (data:people) => {
@@ -49,6 +45,15 @@ const Home: React.FC = () => {
       }
     },
   });
+
+  useEffect(() => {
+    const handleSetUsers = () => {
+      if (data && data.allUsers) {
+        setUsers(data.allUsers.results);
+      }
+    }
+    handleSetUsers()
+  }, [data, setUsers])
   
   const handlePrevPage = () => {
     if (currentPage > 1) {
@@ -62,11 +67,7 @@ const Home: React.FC = () => {
     }
   };
 
-  const handleSetUsers = () => {
-    if (data && data.allUsers) {
-      setUsers(data.allUsers.results);
-    }
-  }
+
 
   if (error) return <p>Error: {error.message}</p>;
 
