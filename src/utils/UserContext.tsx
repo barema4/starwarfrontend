@@ -19,7 +19,7 @@ interface Props {
   }
 
 export const UserProvider: React.FC<Props> = ({ children }) => {
-  const [users, setUsers] = useState<any[]>([]);
+  const [users, setUsers] = useState<string[]>([]);
   const [currentPage, setCurrentPage] = useState<number>(1)
 
   return (

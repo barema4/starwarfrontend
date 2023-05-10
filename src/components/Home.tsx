@@ -19,13 +19,30 @@ const ALL_USERS_QUERY = gql`
   }
 `;
 
+
+interface people {
+  name: string
+  height: number
+  mass: number
+  gender: string
+  homeworld: string
+  allUsers:{
+    results: []
+    count: number
+  }
+  
+}
 const Home: React.FC = () => {
-  const [totalPages, setTotalPages] = useState(0);
+  const [totalPages, setTotalPages] = useState<number>(0);
   const { setUsers, currentPage, setCurrentPage } = useContext(UserContext);
+
+  useEffect(() => {
+    handleSetUsers()
+  },)
  
   const { loading, error, data } = useQuery(ALL_USERS_QUERY, {
     variables: { page: currentPage },
-    onCompleted: (data) => {
+    onCompleted: (data:people) => {
       if (data.allUsers) {
         setUsers(data.allUsers.results);
         setTotalPages(Math.ceil(data.allUsers.count / 10));
@@ -33,7 +50,6 @@ const Home: React.FC = () => {
     },
   });
   
-
   const handlePrevPage = () => {
     if (currentPage > 1) {
       setCurrentPage(currentPage - 1);
@@ -52,11 +68,6 @@ const Home: React.FC = () => {
     }
   }
 
-  useEffect(() => {
-    handleSetUsers()
-  }, []);
-
-  if (loading) return <p>Loading...</p>;
   if (error) return <p>Error: {error.message}</p>;
 
 const Title = styled.h1`
@@ -110,22 +121,21 @@ const DataWrapper = styled.div`
 `
 
 
-
-
   return (
     <div className="flex flex-col h-screen justify-center items-center bg-blue-400">
       <Title>List of People</Title>
-      <Data>
-      {data.allUsers.results.map((user: any) => (
+      {loading? (<div>Loading ...</div>) : <Data>
+      {data?.allUsers.results.map((user: people) => (
        <Link to={`${user.name}`}>
         <DataWrapper key={user.name}>
-          <div className='www'>{user.name}</div>
+          <div>{user.name}</div>
         </DataWrapper>
        </Link> 
       ))}
 
       </Data>
-      
+
+      }
       <Container>
         <Button onClick={handlePrevPage} disabled={currentPage === 1}>
           Previous

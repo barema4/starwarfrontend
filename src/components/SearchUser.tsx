@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext  } from 'react';
+import React, {  useContext  } from 'react';
 import { useParams , useNavigate } from 'react-router-dom';
 import { useQuery, gql } from '@apollo/client';
 import { UserContext } from '../utils/UserContext';
@@ -16,14 +16,22 @@ const SEARCH_USER_QUERY = gql`
   }
 `;
 
+interface user {
+  name: string
+  height: number
+  mass: number
+  gender: string
+  homeworld: string
+}
+
 const SearchUser: React.FC = () => {
   const { name } = useParams<{ name: string }>();
-  const { users } = useContext(UserContext);
-  const [searchedUsers, setSearchedUsers] = useState<any[]>([]);
-  const { loading, error, data } = useQuery(SEARCH_USER_QUERY, {
+  const { loading, error } = useQuery(SEARCH_USER_QUERY, {
     variables: { name },
   });
 
+  const { users } = useContext(UserContext);
+  
   const navigate = useNavigate()
 
   const filteredUsers = users.filter((user) => {
@@ -31,13 +39,6 @@ const SearchUser: React.FC = () => {
   }
   );
 
-  useEffect(() => {
-    if (data && data.searchUser) {
-      setSearchedUsers(data.searchUser);
-    }
-  }, [data]);
-
-  if (loading) return <p>Loading...</p>;
   if (error) return <p>Error: {error.message}</p>;
 
   const handleBack = () => {
@@ -73,8 +74,8 @@ const SearchUser: React.FC = () => {
       <Title>Personal Details</Title>
       {filteredUsers.length === 0 ? (
         <p>No results found.</p>
-      ) : (
-        filteredUsers.map((user: any) => (
+      ) : ( loading? (<div>Loading ...</div>):
+        filteredUsers.map((user: user) => (
           <div key={user.name}>
             <Content>
                 <label>Name :</label>
