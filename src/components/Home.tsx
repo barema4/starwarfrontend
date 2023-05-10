@@ -38,7 +38,7 @@ const Home: React.FC = () => {
 
   useEffect(() => {
     handleSetUsers()
-  },)
+  }, [])
  
   const { loading, error, data } = useQuery(ALL_USERS_QUERY, {
     variables: { page: currentPage },
