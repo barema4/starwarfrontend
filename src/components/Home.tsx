@@ -91,8 +91,10 @@ const Home: React.FC = () => {
   const Container = styled.div`
     display: flex;
     justify-content: space-between;
+    color: white;
+    align-items: center;
   `;
-
+    
   const Data = styled.div`
     display: grid;
     grid-template-columns: 1fr 1fr 1fr;
@@ -136,6 +138,7 @@ const Home: React.FC = () => {
         <Button onClick={handlePrevPage} disabled={currentPage === 1}>
           Previous
         </Button>
+        <p>{currentPage}</p>
         <Button onClick={handleNextPage} disabled={currentPage === totalPages}>
           Next
         </Button>
